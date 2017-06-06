@@ -12,23 +12,34 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractJsonpResponseBodyAdvice;
 
+import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.service.RepositoryService;
 
 @Controller
 @RequestMapping("/api/v1")
 public class Api {
+    @Value("${github.token}") private String githubToken;
+
     @CrossOrigin
-    @RequestMapping(value = "/watch", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Integer> status(@ModelAttribute("username") String username) {
+    @RequestMapping(
+        headers = {"content-type=application/json"}, value = "/watch", method = RequestMethod.POST)
+    public @ResponseBody Map<String, Integer>
+    status(@RequestBody User user) {
         Map<String, Integer> data = new HashMap<String, Integer>();
         try {
-            RepositoryService service = new RepositoryService();
-            for (Repository repo : service.getRepositories(username))
+            GitHubClient client = new GitHubClient();
+            client.setOAuth2Token(githubToken);
+            RepositoryService service = new RepositoryService(client);
+            for (Repository repo : service.getRepositories(user.username)) {
                 data.put(repo.getName(), repo.getWatchers());
+            }
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return data;
