@@ -1,32 +1,32 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.3.RELEASE'
-	}
-	repositories {
+    ext {
+        springBootVersion = '1.5.3.RELEASE'
+    }
+    repositories {
         mavenLocal()
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
 plugins {
-	id "com.moowork.node" version "1.1.1"
-		id "net.linguica.maven-settings" version "0.5"
+    id "com.moowork.node" version "1.1.1"
+    id "net.linguica.maven-settings" version "0.5"
 }
 node {
-	// Version of node to use.
-	version = '7.2.0'
-		// Base URL for fetching node distributions (change if you have a mirror).
-		distBaseUrl = 'https://nodejs.org/dist'
-		// If true, it will download node using above parameters.
-		// If false, it will try to use globally installed node.
-		download = true
-		// Set the work directory for unpacking node
-		workDir = file("${project.buildDir}/nodejs")
-		// Set the work directory where node_modules should be located
-		nodeModulesDir = file("src/main/react")
+    // Version of node to use.
+    version = '8.0.0'
+    // Base URL for fetching node distributions (change if you have a mirror).
+    distBaseUrl = 'https://nodejs.org/dist'
+    // If true, it will download node using above parameters.
+    // If false, it will try to use globally installed node.
+    download = true
+    // Set the work directory for unpacking node
+    workDir = file("${project.buildDir}/nodejs")
+    // Set the work directory where node_modules should be located
+    nodeModulesDir = file("src/main/react")
 }
 
 apply plugin: 'java'
@@ -40,28 +40,29 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenLocal()
-	mavenCentral()
+    mavenCentral()
 }
 
 configurations {
-	providedRuntime
+    providedRuntime
 }
 
 task runBuild(type: YarnTask) {
-	args = ['run', 'build']
+    args = ['run', 'build']
 }
 task copyTask(type: Copy) {
-	from 'src/main/react/build/static/'
-		into 'src/main/resources/static/'
+    from 'src/main/react/build/static/'
+    into 'src/main/resources/static/'
 }
-	clean.finalizedBy(yarn_install)
-	npmInstall.finalizedBy(runBuild)
+
+clean.finalizedBy(yarn_install)
+npmInstall.finalizedBy(runBuild)
 runBuild.finalizedBy(copyTask)
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-web')
-	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
     compile('org.apereo.portal:uPortal-soffit-renderer:4.3.1')
     providedRuntime('org.apache.tomcat.embed:tomcat-embed-jasper')
     compile('org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5')
