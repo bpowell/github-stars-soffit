@@ -12,14 +12,12 @@ buildscript {
 }
 
 plugins {
-	id "com.moowork.node" version "0.13"
+	id "com.moowork.node" version "1.1.1"
 		id "net.linguica.maven-settings" version "0.5"
 }
 node {
 	// Version of node to use.
 	version = '7.2.0'
-		// Version of npm to use.
-		npmVersion = '4.0.2'
 		// Base URL for fetching node distributions (change if you have a mirror).
 		distBaseUrl = 'https://nodejs.org/dist'
 		// If true, it will download node using above parameters.
@@ -49,14 +47,14 @@ configurations {
 	providedRuntime
 }
 
-task runBuild(type: NpmTask) {
+task runBuild(type: YarnTask) {
 	args = ['run', 'build']
 }
 task copyTask(type: Copy) {
-	from 'react/build/static/'
-		into 'src/main/webapp/'
+	from 'src/main/react/build/static/'
+		into 'src/main/resources/static/'
 }
-	clean.finalizedBy(npmInstall)
+	clean.finalizedBy(yarn_install)
 	npmInstall.finalizedBy(runBuild)
 runBuild.finalizedBy(copyTask)
 
